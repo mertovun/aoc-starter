@@ -1,0 +1,52 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 year day"
+    exit 1
+fi
+
+year="$1"
+day="$2"
+
+dir="./$year/$day"
+mkdir -p "$dir"
+
+puzzle_url="https://adventofcode.com/${year}/day/${day}"
+input_url="https://adventofcode.com/${year}/day/${day}/input"
+
+puzzle_filename="${dir}/puzzle-${year}-${day}"
+puzzle_html="$puzzle_filename.html"
+puzzle_md="$puzzle_filename.md"
+input_filename="${dir}/input"
+
+curl -s -X GET "$puzzle_url" -H "Cookie: $AOC_SESSION" -o "$puzzle_html"
+
+curl -s -X GET "$input_url" -H "Cookie: $AOC_SESSION" -o "$input_filename"
+
+echo "Puzzle saved to $puzzle_html"
+echo "Puzzle input saved to $input_filename"
+
+
+if command -v pandoc >/dev/null; then
+    echo "Pandoc is installed. Proceeding with conversion..."
+    # Convert HTML to Markdown
+    pandoc -f html -t markdown -o "$puzzle_md" "$puzzle_html"
+    echo "Conversion completed. Markdown file is saved as $puzzle_md"
+else
+    echo "Pandoc is not installed. Please install Pandoc to use this script."
+    # Provide installation instructions based on detected OS
+    case "$(uname -s)" in
+       Darwin)
+         echo "Run 'brew install pandoc' to install on macOS."
+         ;;
+       Linux)
+         echo "Use your package manager to install pandoc. For example, 'sudo apt-get install pandoc' on Debian/Ubuntu or 'sudo dnf install pandoc' on Fedora."
+         ;;
+       CYGWIN*|MINGW32*|MSYS*|MINGW*)
+         echo "Use 'choco install pandoc' on Windows (with Chocolatey installed)."
+         ;;
+       *)
+         echo "Operating system not recognized. Please manually install Pandoc."
+         ;;
+    esac
+fi

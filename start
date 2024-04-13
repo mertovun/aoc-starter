@@ -1,0 +1,27 @@
+
+#!/bin/bash
+
+# Check if three arguments were passed in
+if [ "$#" -ne 3 ]; then
+    echo "Usage: $0 <year> <day> <language>"
+    exit 1
+fi
+
+year="$1"
+day="$2"
+lang="$3"
+
+target_dir="./${year}/${day}/${lang}"
+mkdir -p "$target_dir"
+
+./get "$year" "$day"
+
+mv "./${year}/${day}/puzzle-${year}-${day}.html" "$target_dir/"
+mv "./${year}/${day}/puzzle-${year}-${day}.md" "$target_dir/" 2>/dev/null # In case Markdown conversion didn't happen
+mv "./${year}/${day}/input" "$target_dir/"
+
+touch "${target_dir}/main.${lang}"
+
+echo "Setup completed in directory: $target_dir"
+
+echo "Run 'cd $target_dir' to move into the directory."
