@@ -63,3 +63,5 @@ For a Python starter setup for December 1st, 2015:
 cd 2015/1/py
 ```
 
+Good Luck! 🎄
+
